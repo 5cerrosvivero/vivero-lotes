@@ -2968,8 +2968,10 @@ const vacioVal = v => v === '' || v == null;
 function norm(s) { return String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
 
 /* ---------- dominio ---------- */
-const ESTADOS = ['En crecimiento', 'Listo para venta', 'Vendido', 'Descartado'];
-const ESTADO_TONO = { 'En crecimiento': '', 'Listo para venta': 'ok', 'Vendido': 'off', 'Descartado': 'bad' };
+const ESTADOS = ['Germinando', 'Primeras hojas', 'Creciendo', 'Listo para venta', 'Puesta en campo', 'Vendido', 'Descartado'];
+const ESTADO_TONO = { 'Germinando': 'warn', 'Primeras hojas': '', 'Creciendo': '', 'Listo para venta': 'ok', 'Puesta en campo': 'off', 'Vendido': 'off', 'Descartado': 'bad' };
+const ESTADO_DEFECTO = 'Creciendo';                      // estado que se asume si la celda está vacía
+const ESTADO_ALIAS = { 'en crecimiento': 'Creciendo' };  // nombre anterior: las filas viejas se siguen viendo bien
 const TIPOS_SALIDA = ['Baja de plantas', 'Venta / entrega'];
 
 const GRUPOS = [
@@ -3297,7 +3299,7 @@ function vistaLista() {
   const estadoDatos = h('span', { class: 'nota', id: 'estado-datos' });
   el.append(
     h('header', { class: 'cabecera' },
-      h('div', null, h('div', { class: 'sobre' }, 'Vivero · Trazabilidad'), h('h1', null, 'Lotes')),
+      h('div', null, h('div', { class: 'sobre' }, 'Vivero de trufas · Trazabilidad'), h('h1', null, 'Lotes del Vivero')),
       h('div', { class: 'acciones' }, btnAct, btnEtiquetas)));
 
   const banner = h('div');
@@ -3568,8 +3570,8 @@ function normNumero(v) {
 }
 function normEstado(v) {
   const n = norm(v);
-  if (!n) return ESTADOS[0];
-  return ESTADOS.find(e => norm(e) === n) || String(v).trim();
+  if (!n) return ESTADO_DEFECTO;
+  return ESTADOS.find(e => norm(e) === n) || ESTADO_ALIAS[n] || String(v).trim();
 }
 
 function tablaDesdeCSV(txt, mapa) {
@@ -3599,7 +3601,7 @@ function interpretar(txtLotes, txtHist) {
     });
     if (!d.codigo) { if (Object.entries(d).some(([k, v]) => k !== 'codigo' && k !== 'estado' && !vacioVal(v))) sinCodigo++; continue; }
     const id = d.codigo; delete d.codigo;
-    if (!d.estado) d.estado = ESTADOS[0];
+    if (!d.estado) d.estado = ESTADO_DEFECTO;
     if (lotes.has(id)) { if (!repetidos.includes(id)) repetidos.push(id); continue; }
     lotes.set(id, d);
   }
