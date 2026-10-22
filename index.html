@@ -95,6 +95,8 @@ textarea { resize: vertical; }
 .chip { min-height: 34px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); cursor: pointer; font-weight: 600; font-size: .88rem; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .chip .n { font-family: var(--font-mono); font-weight: 500; margin-left: 6px; opacity: .75; }
+.f-estado { display: none; }
+@media (max-width: 760px) { .chips { display: none; } .f-estado { display: block; } }
 
 .resumen { display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 4px 0 12px; color: var(--muted); font-size: .9rem; }
 .resumen b { color: var(--ink); font-family: var(--font-mono); font-weight: 700; font-size: 1.05rem; margin-right: 4px; }
@@ -3310,11 +3312,12 @@ function vistaLista() {
     [['codigo', 'Código'], ['recientes', 'Más recientes'], ['especie', 'Especie'], ['existencia', 'Más existencias']].map(([v, t]) => h('option', { value: v }, t)));
   selOrd.value = S.F.orden;
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Filtrar por estado' });
+  const selEstado = h('select', { id: 'f-estado', class: 'f-estado', 'aria-label': 'Filtrar por estado', onchange: e => { S.F.estado = e.target.value; pintar(); } });
   const resumen = h('div', { class: 'resumen' });
   const cuerpo = h('div');
   const avisos = h('div');
 
-  el.append(banner, avisos, h('div', { class: 'filtros' }, h('div', { class: 'filtros-fila' }, buscar, selEsp, selOrd), chips), resumen, cuerpo,
+  el.append(banner, avisos, h('div', { class: 'filtros' }, h('div', { class: 'filtros-fila' }, buscar, selEstado, selEsp, selOrd), chips), resumen, cuerpo,
     h('p', { class: 'nota pie-datos' }, estadoDatos, ' · Esta página es solo de consulta: los datos se cargan en la planilla.'));
 
   function pintar() {
@@ -3338,6 +3341,10 @@ function vistaLista() {
       h('button', { class: 'chip', type: 'button', 'aria-pressed': String(!S.F.estado), onclick: () => { S.F.estado = ''; pintar(); } }, 'Todos', h('span', { class: 'n' }, base.length)),
       ...ESTADOS.map(e => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(S.F.estado === e),
         onclick: () => { S.F.estado = S.F.estado === e ? '' : e; pintar(); } }, e, h('span', { class: 'n' }, cuenta[e] || 0))));
+    selEstado.replaceChildren(
+      h('option', { value: '' }, `Todos los estados (${base.length})`),
+      ...ESTADOS.map(e => h('option', { value: e }, `${e} (${cuenta[e] || 0})`)));
+    selEstado.value = S.F.estado;
 
     const lista = ordenar(filtrar());
     const visibles = new Set(lista.map(l => l.id));
