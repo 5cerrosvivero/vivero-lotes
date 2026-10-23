@@ -2970,7 +2970,7 @@ const vacioVal = v => v === '' || v == null;
 function norm(s) { return String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
 
 /* ---------- dominio ---------- */
-const ESTADOS = ['Germinando', 'Prim. hojas', 'Creciendo', 'Listo P/venta', 'En campo', 'Vendido', 'Descartado'];
+const ESTADOS = ['Germinando', 'Primeras hojas', 'Creciendo', 'Listo para venta', 'Puesta en campo', 'Vendido', 'Descartado'];
 const ESTADO_TONO = { 'Germinando': 'warn', 'Primeras hojas': '', 'Creciendo': '', 'Listo para venta': 'ok', 'Puesta en campo': 'off', 'Vendido': 'off', 'Descartado': 'bad' };
 const ESTADO_DEFECTO = 'Creciendo';                      // estado que se asume si la celda está vacía
 const ESTADO_ALIAS = { 'en crecimiento': 'Creciendo' };  // nombre anterior: las filas viejas se siguen viendo bien
